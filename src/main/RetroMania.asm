@@ -1,108 +1,82 @@
 INCLUDE "src/main/utils/hardware.inc"
 
+SECTION "GameVariables", WRAM0
+
+wLastKeys:: db
+wCurKeys:: db
+wNewKeys:: db
+wGameState::db
+
 SECTION "Header", ROM0[$100]
     jp EntryPoint
-    ds $150 - @, 0
+    ds $150 - @, 0 ; Make room for the header
 
 EntryPoint:
-    
-WaitVBlank:
-    ld a, [rLY]
-    cp 144
-    jp c, WaitVBlank
+; ANCHOR_END: entry-point
+	
+; ANCHOR: entry-point-end
+	; Shut down audio circuitry
+	xor a
+	ld [rNR52], a
+	ld [wGameState], a
 
-    ld a, 0
-    ld [rLCDC], a
+	; Wait for the vertical blank phase before initiating the library
+    call WaitForOneVBlank
 
-; Load palette data from logo.pal
-ld hl, LogoPalData
-ld b, LogoPalEnd - LogoPalData  ; number of bytes
-ld a, %10000000                 ; rBCPS index 0, auto-increment
-ld [rBCPS], a
+	; Turn the LCD off
+	xor a
+	ld [rLCDC], a
 
-LoadPaletteLoop:
-    ld a, [hl]
-    ld [rBCPD], a
-    inc hl
-    dec b
-    jr nz, LoadPaletteLoop
+	; Load our common text font into VRAM
+	call LoadTextFontIntoVRAM
 
-; Copy tile data
-ld de, Tiles
-ld hl, $9000
-ld bc, TilesEnd - Tiles
-CopyTiles:
-    ld a, [de]
-    ld [hli], a
-    inc de
-    dec bc
-    ld a, b
-    or a, c
-    jp nz, CopyTiles
+	; Turn the LCD on
+	ld a, LCDCF_ON  | LCDCF_BGON|LCDCF_OBJON | LCDCF_OBJ16 | LCDCF_WINON | LCDCF_WIN9C00
+	ld [rLCDC], a
 
-; --- VRAM Bank Switching for Attribute Map ---
-; First, switch to VRAM Bank 1 to load the attribute map
-ld a, 1
-ld [rVBK], a
+	; During the first (blank) frame, initialize display registers
+	ld a, %11100100
+	ld [rBGP], a
+	ld [rOBP0], a    
 
-; Copy attribute map to VRAM Bank 1
-ld de, Attrmap
-ld hl, $9800
-ld bc, AttrmapEnd - Attrmap
-CopyAttrmap:
-    ld a, [de]
-    ld [hli], a
-    inc de
-    dec bc
-    ld a, b
-    or a, c
-    jp nz, CopyAttrmap
+; ANCHOR_END: entry-point-end
+; ANCHOR: next-game-state
 
-; Switch back to VRAM Bank 0 for regular operations
-ld a, 0
-ld [rVBK], a
-   
-; Copy tilemap
-ld de, Tilemap
-ld hl, $9800
-ld bc, TilemapEnd - Tilemap
-CopyTilemap:
-    ld a, [de]
-    ld [hli], a
-    inc de
-    dec bc
-    ld a, b
-    or a, c
-    jp nz, CopyTilemap
+NextGameState::
 
-; Set horizontal scroll (SCX)
-ld a, 48      ; X offset = 32 pixels
-ld [rSCX], a
+	; Do not turn the LCD off outside of VBlank
+    call WaitForOneVBlank
+	call ClearBackground
 
-; Set vertical scroll (SCY)
-ld a, 55      ; Y offset = 42 pixels
-ld [rSCY], a
+	; Turn the LCD off
+	xor a
+	ld [rLCDC], a
 
-; Turn on LCD
-ld a, LCDCF_ON | LCDCF_BGON
-ld [rLCDC], a
+    ld a, 48      ; X offset = 32 pixels
+    ld [rSCX], a
 
-Done:
+    ld a, 55      ; Y offset = 42 pixels
+    ld [rSCY], a
+
+	call InitTitleScreenState
+
+    ld a, 120
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction
+
+	call ClearTitleScreen
+
+	; Turn the LCD off
+	xor a
+	ld [rLCDC], a
+
+    ld a, 0      ; X offset = 32 pixels
+    ld [rSCX], a
+
+    ld [rSCY], a
+
+    call UpdateTitleScreenState
+
+    Done:
     jp Done
-
-; --- Data ---
-Tiles:
-    INCBIN "src/generated/backgrounds/logo.2bpp"
-TilesEnd:
-
-Tilemap:
-    INCBIN "src/generated/backgrounds/logo.tilemap"
-TilemapEnd:
-
-Attrmap:
-    INCBIN "src/generated/backgrounds/logo.attrmap"
-AttrmapEnd:
-
-LogoPalData:
-    INCBIN "src/generated/backgrounds/logo.pal"
-LogoPalEnd:
+; ANCHOR_END: next-game-state

@@ -46,20 +46,21 @@ all: $(BINS)
 
 # ANCHOR: generate-graphics
 NEEDED_GRAPHICS = \
-	$(GENBACKGROUNDS)/logo.tilemap
+	$(GENBACKGROUNDS)/text-font.2bpp \
+	$(GENBACKGROUNDS)/title-screen.tilemap
 
 # Generate sprites, ensuring the containing directories have been created.
 $(GENSPRITES)/%.2bpp: $(RESSPRITES)/%.png | $(GENSPRITES)
-	$(GFX) -c "#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE" --columns -o $@ $<
+	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" --columns -o $@ $<
 
 # Generate background tile set, ensuring the containing directories have been created.
 $(GENBACKGROUNDS)/%.2bpp: $(RESBACKGROUNDS)/%.png | $(GENBACKGROUNDS)
-	$(GFX) -c "#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE" -o $@ $<
+	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" -o $@ $<
 
 # Generate background tile map *and* tile set, ensuring the containing directories
 # have been created.
 $(GENBACKGROUNDS)/%.tilemap: $(RESBACKGROUNDS)/%.png | $(GENBACKGROUNDS)
-	$(GFX) -c "#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE" \
+	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" \
 		--tilemap $@ \
 		--unique-tiles \
 		-o $(GENBACKGROUNDS)/$*.2bpp \
