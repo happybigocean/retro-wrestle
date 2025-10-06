@@ -86,12 +86,9 @@ DrawTitleScreen::
 UpdateTitleScreenState::
     ; Call Our function that draws text onto background/window tiles
     
-    ; Wait for A
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld a, PADF_A
-    ld [mWaitKey], a
-
-    call WaitForKeyFunction
+    ld a, 120
+    ld [wVBlankCount], a
+    call WaitForVBlankFunction
 
     call ClearTitleScreen
 
