@@ -34,13 +34,4 @@ WaitForVBlankFunction_Loop2::
 	jp nc, WaitForVBlankFunction_Loop2 ; A conditional jump. The condition is that 'c' is set, the last operation overflowed
 
     jp WaitForVBlankFunction_Loop
-
-
-WaitVBlank::
-    ld a, [rLY]
-    cp 144
-    jp c, WaitVBlank
-
-    ld a, 0
-    ld [rLCDC], a
 ; ANCHOR_END: vblank-utils

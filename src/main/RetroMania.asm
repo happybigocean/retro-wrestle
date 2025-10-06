@@ -45,24 +45,24 @@ EntryPoint:
 NextGameState::
 
 	; Do not turn the LCD off outside of VBlank
-    call WaitForOneVBlank
+	call WaitForOneVBlank
 	call ClearBackground
 
 	; Turn the LCD off
 	xor a
 	ld [rLCDC], a
 
-    ld a, 48      ; X offset = 32 pixels
-    ld [rSCX], a
+	ld a, 48      ; X offset = 32 pixels
+	ld [rSCX], a
 
-    ld a, 55      ; Y offset = 42 pixels
-    ld [rSCY], a
+	ld a, 55      ; Y offset = 42 pixels
+	ld [rSCY], a
 
 	call InitTitleScreenState
 
-    ld a, 120
-    ld [wVBlankCount], a
-    call WaitForVBlankFunction
+	ld a, 120
+	ld [wVBlankCount], a
+	call WaitForVBlankFunction
 
 	call ClearTitleScreen
 
@@ -70,13 +70,13 @@ NextGameState::
 	xor a
 	ld [rLCDC], a
 
-    ld a, 0      ; X offset = 32 pixels
-    ld [rSCX], a
+	ld a, 0      ; X offset = 32 pixels
+	ld [rSCX], a
 
-    ld [rSCY], a
+	ld [rSCY], a
 
-    call UpdateTitleScreenState
+	call UpdateTitleScreenState
 
-    Done:
-    jp Done
+	Done:
+	jp Done
 ; ANCHOR_END: next-game-state
