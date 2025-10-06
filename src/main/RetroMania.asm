@@ -6,6 +6,7 @@ wLastKeys:: db
 wCurKeys:: db
 wNewKeys:: db
 wGameState::db
+wCurOption::db 
 
 SECTION "Header", ROM0[$100]
     jp EntryPoint
@@ -58,25 +59,30 @@ NextGameState::
 	ld a, 55      ; Y offset = 42 pixels
 	ld [rSCY], a
 
-	call InitTitleScreenState
-
-	ld a, 120
-	ld [wVBlankCount], a
-	call WaitForVBlankFunction
-
-	call ClearTitleScreen
-
-	; Turn the LCD off
 	xor a
-	ld [rLCDC], a
+	ld [rWX], a
+	ld [rWY], a
 
-	ld a, 0      ; X offset = 32 pixels
-	ld [rSCX], a
+	; disable interrupts
+	call DisableInterrupts
 
-	ld [rSCY], a
+	; Initiate the next state
+	ld a, [wGameState]
+	;cp 2 ; 2 = Gameplay
+	;call z, InitGameplayState
+	ld a, [wGameState]
+	cp 1 ; 1 = Menu
+	call z, InitMenuState
+	ld a, [wGameState]
+	and a ; 0 = Title
+	call z, InitTitleScreenState
 
-	call UpdateTitleScreenState
+	; Update the next state
+	ld a, [wGameState]
+	;cp 2 ; 2 = Gameplay
+	;jp z, UpdateGameplayState
+	cp 1 ; 1 = Menu
+	jp z, UpdateMenuState
+	jp UpdateTitleScreenState
 
-	Done:
-	jp Done
 ; ANCHOR_END: next-game-state

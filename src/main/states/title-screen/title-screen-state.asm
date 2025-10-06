@@ -4,13 +4,6 @@ INCLUDE "src/main/utils/macros/text-macros.inc"
 
 SECTION "TitleScreenState", ROM0
 
-StartText::  db "start game", 255
-FlagText:: db 1, 255
-
-ClearFlagText:: db 0, 255
-TrainText::  db "train", 255
-OptionsText::  db "options", 255
-
 titleScreenTileData: INCBIN "src/generated/backgrounds/title-screen.2bpp"
 titleScreenTileDataEnd:
  
@@ -92,69 +85,22 @@ DrawTitleScreen::
 ; ANCHOR: update-title-screen
 UpdateTitleScreenState::
     ; Call Our function that draws text onto background/window tiles
+    
+    ; Wait for A
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ld a, PADF_A
+    ld [mWaitKey], a
+
+    call WaitForKeyFunction
+
+    call ClearTitleScreen
+
     ; Turn the LCD on
 	ld a, LCDCF_ON  | LCDCF_BGON|LCDCF_OBJON | LCDCF_OBJ16
 	ld [rLCDC], a
 
-	call WaitForOneVBlank
-
-    xor a
-    ld de, $9862
-
-    ld hl, FlagText
-    call DrawTextTilesLoop
-     ;;;;;first line;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld de, $9864
-
-    ld hl, StartText
-    call DrawTextTilesLoop
-
-    ;;;;;second line;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld de, $98c4
-
-    ld hl, TrainText
-    call DrawTextTilesLoop
-    
-    ;;;;;third line;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld de, $9924
-
-    ld hl, OptionsText
-    call DrawTextTilesLoop
-
-    ; Wait for A
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld a, PADF_A
-    ld [mWaitKey], a
-
-    call WaitForKeyFunction
-
-    ld de, $9862
-
-    ld hl, ClearFlagText
-    call DrawTextTilesLoop
-
-    ld de, $98c2
-
-    ld hl, FlagText
-    call DrawTextTilesLoop
-
-    
-    ; Wait for A
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ld a, PADF_A
-    ld [mWaitKey], a
-
-    call WaitForKeyFunction
-
-    ld de, $98c2
-
-    ld hl, ClearFlagText
-    call DrawTextTilesLoop
-
-    ld de, $9922
-
-    ld hl, FlagText
-    call DrawTextTilesLoop
-
+    ld a, 1
+    ld [wGameState],a
+    jp NextGameState
     ret
 ; ANCHOR_END: update-title-screen
