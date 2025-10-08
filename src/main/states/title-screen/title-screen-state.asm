@@ -90,7 +90,8 @@ UpdateTitleScreenState::
     ld [wVBlankCount], a
     call WaitForVBlankFunction
 
-    call ClearTitleScreen
+    ; Clear the background
+    call ClearBackgroundWithAttr
 
     ; Turn the LCD on
 	ld a, LCDCF_ON  | LCDCF_BGON|LCDCF_OBJON | LCDCF_OBJ16

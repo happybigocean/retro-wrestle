@@ -30,7 +30,7 @@ ClearBackground::
 
 	ret
 
-ClearTitleScreen::
+ClearBackgroundWithAttr::
 
 	; Turn the LCD off
 	xor a
@@ -39,7 +39,7 @@ ClearTitleScreen::
 	ld bc, 1024
 	ld hl, $9800
 
-	ClearTitleScreenLoop:
+	ClearBackLoop:
 
 		xor a
 		ld [hli], a
@@ -48,20 +48,20 @@ ClearTitleScreen::
 		ld a, b
 		or c
 
-		jp nz, ClearTitleScreenLoop
+		jp nz, ClearBackLoop
 
 	ld a, 1           ; use palette #1 instead of 0
 	ld [rVBK], a
 	ld bc, 1024
 	ld hl, $9800
 
-	ClearTitleScreenAttrLoop:
+	ClearBackgroundWithAttrLoop:
 		xor a
 		ld [hli], a       ; set all tiles to palette #1
 		dec bc
 		ld a, b
 		or c
-		jp nz, ClearTitleScreenAttrLoop
+		jp nz, ClearBackgroundWithAttrLoop
 
 	ld a, 0           ; use palette #0 instead of 1
 	ld [rVBK], a
@@ -69,13 +69,13 @@ ClearTitleScreen::
 	ld bc, 1024
 	ld hl, $9340
 
-	ClearTitleScreenTileDataLoop:
+	ClearBackgroundWithAttrTileDataLoop:
 		xor a
 		ld [hli], a       ; set all tiles to palette #1
 		dec bc
 		ld a, b
 		or c
-		jp nz, ClearTitleScreenTileDataLoop
+		jp nz, ClearBackgroundWithAttrTileDataLoop
 
 	; Turn the LCD on
 	ld a, LCDCF_ON  | LCDCF_BGON|LCDCF_OBJON | LCDCF_OBJ16

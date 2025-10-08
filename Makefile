@@ -47,20 +47,35 @@ all: $(BINS)
 # ANCHOR: generate-graphics
 NEEDED_GRAPHICS = \
 	$(GENBACKGROUNDS)/text-font.2bpp \
-	$(GENBACKGROUNDS)/title-screen.tilemap
+	$(GENBACKGROUNDS)/title-screen.tilemap \
+	$(GENBACKGROUNDS)/arena.tilemap
 
 # Generate sprites, ensuring the containing directories have been created.
 $(GENSPRITES)/%.2bpp: $(RESSPRITES)/%.png | $(GENSPRITES)
-	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" --columns -o $@ $<
+	$(GFX) -c " #FFFFFF, #cfcfcf, #686868, #000000; \
+						 #4D53BB, #0BFF01, #DEE0EE, #FBFF01; \
+						#38383A, #4D53BB, #F3533D, #DEE0EE; \
+						#000000, #F3533D, #686868, #55c4fe; \
+						#000000, #F3533D, #cfcfcf, #55c4fe;" \
+						--columns -o $@ $<
 
 # Generate background tile set, ensuring the containing directories have been created.
 $(GENBACKGROUNDS)/%.2bpp: $(RESBACKGROUNDS)/%.png | $(GENBACKGROUNDS)
-	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" -o $@ $<
+	$(GFX) -c "#FFFFFF, #cfcfcf, #686868, #000000; \
+						#4D53BB, #0BFF01, #DEE0EE, #FBFF01; \
+						#38383A, #4D53BB, #F3533D, #DEE0EE; \
+						#000000, #F3533D, #686868, #55c4fe; \
+						 #000000, #F3533D, #cfcfcf, #55c4fe;" \
+						 -o $@ $<
 
 # Generate background tile map *and* tile set, ensuring the containing directories
 # have been created.
 $(GENBACKGROUNDS)/%.tilemap: $(RESBACKGROUNDS)/%.png | $(GENBACKGROUNDS)
-	$(GFX) -c "#FFFFFF,#cfcfcf,#686868,#000000;#4D53BB,#0BFF01,#DEE0EE,#FBFF01;#38383A,#4D53BB,#F3533D,#DEE0EE;" \
+	$(GFX) -c "#FFFFFF, #cfcfcf, #686868, #000000; \
+						 #4D53BB, #0BFF01, #DEE0EE, #FBFF01; \
+						 #38383A, #4D53BB, #F3533D, #DEE0EE; \
+						 #000000, #F3533D, #686868, #55c4fe; \
+						 #000000, #F3533D, #cfcfcf, #55c4fe;" \
 		--tilemap $@ \
 		--unique-tiles \
 		-o $(GENBACKGROUNDS)/$*.2bpp \
@@ -68,7 +83,7 @@ $(GENBACKGROUNDS)/%.tilemap: $(RESBACKGROUNDS)/%.png | $(GENBACKGROUNDS)
 		-p $(GENBACKGROUNDS)/$*.pal \
 		$<
 # ANCHOR_END: generate-graphics
-
+ 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
 	@make -sn | sed y/\\/\\\\/\\\\\\\^/ | grep -v make >> compile.bat

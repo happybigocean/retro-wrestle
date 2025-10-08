@@ -68,8 +68,8 @@ NextGameState::
 
 	; Initiate the next state
 	ld a, [wGameState]
-	;cp 2 ; 2 = Gameplay
-	;call z, InitGameplayState
+	cp 2 ; 2 = Gameplay
+	call z, InitGamePlayState
 	ld a, [wGameState]
 	cp 1 ; 1 = Menu
 	call z, InitMenuState
@@ -79,8 +79,8 @@ NextGameState::
 
 	; Update the next state
 	ld a, [wGameState]
-	;cp 2 ; 2 = Gameplay
-	;jp z, UpdateGameplayState
+	cp 2 ; 2 = Gameplay
+	jp z, UpdateGamePlayState
 	cp 1 ; 1 = Menu
 	jp z, UpdateMenuState
 	jp UpdateTitleScreenState
