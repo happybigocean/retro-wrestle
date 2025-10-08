@@ -21,6 +21,12 @@ arenaAttrmapEnd:
 ; ANCHOR: gameplay-init
 InitGamePlayState::
 
+    ld a, 42      ; X offset = 42 pixels
+	ld [rSCX], a
+
+    ld a, 35      ; Y offset = 38 pixels
+	ld [rSCY], a
+
 	call DrawArena
 
 	; Turn the LCD on
